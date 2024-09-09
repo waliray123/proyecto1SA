@@ -88,14 +88,15 @@ public class PayBillHotelUseCase implements PayBillHotelInputPort{
             // Guardar reservacion y descripciones
             bill = this.billDbOutputAdapter.payHotelBill(bill);
 
-
+            List<BillDescription> roomsSaved = new ArrayList<>();
             for (BillDescription billDescription : roomsValidated) {                        
                 billDescription.setBill(bill);
-                billDescription = this.billDescriptionDbOutputAdapter.saveBillDescription(billDescription);
+                BillDescription billSaved = this.billDescriptionDbOutputAdapter.saveBillDescription(billDescription);
                 this.billRestApiOutputAdapter.setCheckInRoom(billDescription.getIdProduct().toString());
                 this.billRestApiOutputAdapter.setStatusConfirmed(billRequest.getReservationId());
+                roomsSaved.add(billSaved);
             }
-            bill.setDescriptions(roomsValidated);
+            bill.setDescriptions(roomsSaved);
         }else{
             // Calcular la cantidad de dias que se quedaran
             long daysBeetween = calculateDaysBeetweenTwoDates(
@@ -111,13 +112,14 @@ public class PayBillHotelUseCase implements PayBillHotelInputPort{
             // Guardar reservacion y descripciones
             bill = this.billDbOutputAdapter.payHotelBill(bill);
 
-
+            List<BillDescription> roomsSaved = new ArrayList<>();
             for (BillDescription billDescription : roomsValidated) {                        
                 billDescription.setBill(bill);
-                billDescription = this.billDescriptionDbOutputAdapter.saveBillDescription(billDescription);
+                BillDescription billSaved = this.billDescriptionDbOutputAdapter.saveBillDescription(billDescription);
                 this.billRestApiOutputAdapter.setCheckInRoom(billDescription.getIdProduct().toString());
+                roomsSaved.add(billSaved);
             }
-            bill.setDescriptions(roomsValidated);
+            bill.setDescriptions(roomsSaved);
         }
 
         return bill;

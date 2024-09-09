@@ -60,11 +60,13 @@ public class PayBillRestaurantUseCase implements PayBillRestaurantInputPort{
         // Guardar reservacion y descripciones
         bill = this.billDbOutputAdapter.payRestaurantBill(bill);
 
+        List<BillDescription> dishesSaved = new ArrayList<>();
         for (BillDescription billDescription : dishesValidated) {
             billDescription.setBill(bill);
-            billDescription = this.billDescriptionDbOutputAdapter.saveBillDescription(billDescription);
+            BillDescription billSaved = this.billDescriptionDbOutputAdapter.saveBillDescription(billDescription);
+            dishesSaved.add(billSaved);
         }
-        bill.setDescriptions(dishesValidated);
+        bill.setDescriptions(dishesSaved);
         
         return bill;
     }

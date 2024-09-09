@@ -15,6 +15,7 @@ import com.eatsleep.reports.infrastructure.outputports.restapi.GetBillsDescripti
 import com.eatsleep.reports.infrastructure.outputports.restapi.GetBillsDescriptionByClientIdLocationByDatesOutputPort;
 import com.eatsleep.reports.infrastructure.outputports.restapi.GetBillsDescriptionByIdLocationByDatesOutputPort;
 import com.eatsleep.reports.infrastructure.outputports.restapi.GetAllEmployeesByIdLocationOutputPort;
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -73,13 +74,16 @@ public class ReportsRestApiOutputAdapter implements GetAllEmployeesByIdLocationO
         String url = "lb://BILL/v1/bills/rangelocation/" + idLocation;
 
         // Crear los parámetros de la solicitud
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url)
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url)
                 .queryParam("startDate", startDate != null ? startDate.toString() : "")
                 .queryParam("endDate", endDate != null ? endDate.toString() : "");
 
+        // Construir la URI final
+        URI finalUri = uriBuilder.build().toUri();
+
         try {
             ResponseEntity<List<TopsBillDescriptionResponse>> response = restTemplate.exchange(
-                uriBuilder.toUriString(),
+                finalUri,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<TopsBillDescriptionResponse>>() {}
@@ -105,13 +109,17 @@ public class ReportsRestApiOutputAdapter implements GetAllEmployeesByIdLocationO
         String url = "lb://BILL/v1/bills/rangeclient/" + idClient;
 
         // Crear los parámetros de la solicitud
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url)
+        /// Construir la URI con parámetros de consulta
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url)
                 .queryParam("startDate", startDate != null ? startDate.toString() : "")
                 .queryParam("endDate", endDate != null ? endDate.toString() : "");
 
+        // Construir la URI final
+        URI finalUri = uriBuilder.build().toUri();
+
         try {
             ResponseEntity<List<TopsBillDescriptionResponse>> response = restTemplate.exchange(
-                uriBuilder.toUriString(),
+                finalUri,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<TopsBillDescriptionResponse>>() {}
@@ -137,14 +145,17 @@ public class ReportsRestApiOutputAdapter implements GetAllEmployeesByIdLocationO
 
         String url = "lb://BILL/v1/bills/rangeclient/" + idClient + "/" + idLocation;
 
-        // Crear los parámetros de la solicitud
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url)
+        // Construir la URI con parámetros de consulta
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url)
                 .queryParam("startDate", startDate != null ? startDate.toString() : "")
                 .queryParam("endDate", endDate != null ? endDate.toString() : "");
 
+        // Construir la URI final
+        URI finalUri = uriBuilder.build().toUri();
+
         try {
             ResponseEntity<List<TopsBillDescriptionResponse>> response = restTemplate.exchange(
-                uriBuilder.toUriString(),
+                finalUri,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<TopsBillDescriptionResponse>>() {}
@@ -168,15 +179,18 @@ public class ReportsRestApiOutputAdapter implements GetAllEmployeesByIdLocationO
     public List<BillResponse> getAllBillsByDates(LocalDate startDate, LocalDate endDate) {
         String url = "lb://BILL/v1/bills/rangeall";
 
-        // Construcción de la URL con parámetros opcionales
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url)
+        /// Construir la URI con parámetros de consulta
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url)
                 .queryParam("startDate", startDate != null ? startDate.toString() : "")
                 .queryParam("endDate", endDate != null ? endDate.toString() : "");
+
+        // Construir la URI final
+        URI finalUri = uriBuilder.build().toUri();
 
         try {
             // Ejecutamos la solicitud GET
             ResponseEntity<List<BillResponse>> response = restTemplate.exchange(
-                uriBuilder.toUriString(),
+                finalUri,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<BillResponse>>() {}
@@ -260,7 +274,7 @@ public class ReportsRestApiOutputAdapter implements GetAllEmployeesByIdLocationO
     @Override
     public List<TopsBillDescriptionResponse> findTopRestaurantBills() {
         // Construimos la URL para el endpoint topRestaurant
-        String url = "lb://BILLING-SERVICE/v1/bills/topRestaurant";
+        String url = "lb://BILL/v1/bills/topRestaurant";
 
         try {
             // Ejecutamos la solicitud GET
@@ -292,19 +306,19 @@ public class ReportsRestApiOutputAdapter implements GetAllEmployeesByIdLocationO
         // Construimos la URL para el endpoint allmaintenances
         String url = "lb://HOTEL/v1/hotels/allmaintenances";
 
-        // Construimos los parámetros de la consulta
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url);
-        if (startDate != null) {
-            uriBuilder.queryParam("startDate", startDate);
-        }
-        if (endDate != null) {
-            uriBuilder.queryParam("endDate", endDate);
-        }
+        /// Construir la URI con parámetros de consulta
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url)
+                .queryParam("startDate", startDate != null ? startDate.toString() : "")
+                .queryParam("endDate", endDate != null ? endDate.toString() : "");
+
+        // Construir la URI final
+        URI finalUri = uriBuilder.build().toUri();
+
 
         try {
             // Ejecutamos la solicitud GET
             ResponseEntity<List<MaintenanceResponse>> response = restTemplate.exchange(
-                uriBuilder.toUriString(),
+                finalUri,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<MaintenanceResponse>>() {}
@@ -332,15 +346,18 @@ public class ReportsRestApiOutputAdapter implements GetAllEmployeesByIdLocationO
         // Construimos la URL para el endpoint rangepayments
         String url = "lb://USER/v1/employees/rangepayments";
 
-        // Construimos los parámetros de la consulta
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url)
-            .queryParam("startDate", startDate)
-            .queryParam("endDate", endDate);
+        /// Construir la URI con parámetros de consulta
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(url)
+                .queryParam("startDate", startDate != null ? startDate.toString() : "")
+                .queryParam("endDate", endDate != null ? endDate.toString() : "");
+
+        // Construir la URI final
+        URI finalUri = uriBuilder.build().toUri();
 
         try {
             // Ejecutamos la solicitud GET
             ResponseEntity<List<PaymentResponse>> response = restTemplate.exchange(
-                uriBuilder.toUriString(),
+                finalUri,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<PaymentResponse>>() {}

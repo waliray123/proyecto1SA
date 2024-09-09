@@ -3,6 +3,7 @@ package com.eatsleep.bill.bill.infrastructure.inputadapters.restapi;
 import com.eatsleep.bill.common.WebAdapter;
 import com.eatsleep.bill.bill.application.exceptions.BillException;
 import com.eatsleep.bill.bill.application.findtopspendingclientsusecase.TopSpendingClientResponse;
+import com.eatsleep.bill.bill.application.generatepdfusecase.PdfGenerator;
 import com.eatsleep.bill.bill.application.payhotelbillusecase.PayBillHotelRequest;
 import com.eatsleep.bill.bill.application.payrestaurantbillusecase.PayBillRestaurantRequest;
 import com.eatsleep.bill.bill.domain.Bill;
@@ -20,12 +21,17 @@ import com.eatsleep.bill.bill.infrastructure.inputports.PayBillHotelInputPort;
 import com.eatsleep.bill.bill.infrastructure.inputports.PayBillRestaurantInputPort;
 import com.eatsleep.bill.bill.infrastructure.inputports.RetrieveBillsInputPort;
 import com.eatsleep.bill.billdescription.domain.BillDescription;
+import com.itextpdf.text.DocumentException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,6 +55,7 @@ public class BillControllerAdapter {
     private GetBillsDescriptionByIdLocationInputPort getBillsDescriptionByIdLocationInputPort;
     private GetBillsDescriptionByIdClientInputPort getBillsDescriptionByIdClientInputPort;
     private RetrieveBillsInputPort retrieveBillsInputPort;
+    private PdfGenerator pdfGenerator;
     
     @Autowired
     public BillControllerAdapter(PayBillHotelInputPort payBillHotelInputPort, PayBillRestaurantInputPort payBillRestaurantInputPort
@@ -57,7 +64,8 @@ public class BillControllerAdapter {
             ,GetTopRestaurantBillsInputPort getTopRestaurantBillsInputPort
             ,GetBillsDescriptionByIdLocationInputPort getBillsDescriptionByIdLocationInputPort
             ,GetBillsDescriptionByIdClientInputPort getBillsDescriptionByIdClientInputPort
-            ,RetrieveBillsInputPort retrieveBillsInputPort) {
+            ,RetrieveBillsInputPort retrieveBillsInputPort
+            ,PdfGenerator pdfGenerator) {
         this.payBillHotelInputPort = payBillHotelInputPort;
         this.payBillRestaurantInputPort = payBillRestaurantInputPort;
         this.findToSpendingClientsInputPort = findToSpendingClientsInputPort;
@@ -67,24 +75,40 @@ public class BillControllerAdapter {
         this.getBillsDescriptionByIdLocationInputPort = getBillsDescriptionByIdLocationInputPort;
         this.getBillsDescriptionByIdClientInputPort = getBillsDescriptionByIdClientInputPort;
         this.retrieveBillsInputPort = retrieveBillsInputPort;
+        this.pdfGenerator = pdfGenerator;
     }
     
     @PostMapping("/hotel/{idUser}/{idHotel}")
-    public ResponseEntity<BillResponse> payBillHotel (
+    public HttpEntity<byte[]> payBillHotel (
             @PathVariable String idUser, 
             @PathVariable String idHotel, 
-            @RequestBody PayBillHotelRequest bill) throws BillException{
+            @RequestBody PayBillHotelRequest bill) throws BillException, DocumentException, IOException{
         BillResponse createdBill = new BillResponse(payBillHotelInputPort.makeBill(bill,idUser,idHotel));
-        return new ResponseEntity<>(createdBill, HttpStatus.CREATED);
+        
+        byte[] pdfBytes = pdfGenerator.generateBillPdfHotel(createdBill);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bill.pdf");
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE);
+        
+        return new HttpEntity<>(pdfBytes, headers);
     }
     
     @PostMapping("/restaurant/{idUser}/{idRestaurant}")
-    public ResponseEntity<BillResponse> payBillHotel (
+    public HttpEntity<byte[]> payBillHotel (
             @PathVariable String idUser, 
             @PathVariable String idRestaurant, 
-            @RequestBody PayBillRestaurantRequest bill) throws BillException{
-        BillResponse createdBill = new BillResponse(payBillRestaurantInputPort.makeBill(bill,idUser,idRestaurant));
-        return new ResponseEntity<>(createdBill, HttpStatus.CREATED);
+            @RequestBody PayBillRestaurantRequest bill) throws BillException, DocumentException, IOException {
+        BillResponse createdBill = new BillResponse(payBillRestaurantInputPort.makeBill(bill, idUser, idRestaurant));
+
+        // Generar el PDF
+        byte[] pdfBytes = pdfGenerator.generateBillPdf(createdBill);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bill.pdf");
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE);
+
+        return new HttpEntity<>(pdfBytes, headers);
     }
     
     @GetMapping("/all")
