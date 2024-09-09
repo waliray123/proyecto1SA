@@ -36,6 +36,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/datafile/verifySystemData"
                         ,"/v1/employees/getemployee/{id}"
                                 ,"/v1/employees/all"

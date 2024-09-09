@@ -1,0 +1,67 @@
+version: '3.3'  # Especifica la versión del formato de Compose
+services:
+  mysql-hoteldb:
+    image: mysql:8.0
+    container_name: mysql-hoteldb
+    environment:
+      MYSQL_ROOT_PASSWORD: password123
+      MYSQL_DATABASE: hoteldb
+    volumes:
+      - ./hotel/sql-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "3307:3306"
+
+  mysql-billingdb:
+    image: mysql:8.0
+    container_name: mysql-billingdb
+    environment:
+      MYSQL_ROOT_PASSWORD: password123
+      MYSQL_DATABASE: billingdb
+    volumes:
+      - ./bill/sql-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "3308:3306"
+
+  mysql-promotiondb:
+    image: mysql:8.0
+    container_name: mysql-promotiondb
+    environment:
+      MYSQL_ROOT_PASSWORD: password123
+      MYSQL_DATABASE: promotiondb
+    volumes:
+      - ./promotion/sql-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "3309:3306"
+
+  mysql-reservationdb:
+    image: mysql:8.0
+    container_name: mysql-reservationdb
+    environment:
+      MYSQL_ROOT_PASSWORD: password123
+      MYSQL_DATABASE: reservationdb
+    volumes:
+      - ./reservation/sql-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "3310:3306"
+
+  mysql-restaurantdb:
+    image: mysql:8.0
+    container_name: mysql-restaurantdb
+    environment:
+      MYSQL_ROOT_PASSWORD: password123
+      MYSQL_DATABASE: restaurantdb
+    volumes:
+      - ./restaurant/sql-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "3311:3306"
+
+  mysql-userdb:
+    image: mysql:8.0
+    container_name: mysql-userdb
+    environment:
+      MYSQL_ROOT_PASSWORD: password123
+      MYSQL_DATABASE: userdb
+    volumes:
+      - ./user/sql-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "3312:3306"
