@@ -50,7 +50,7 @@ public class DishDbEntity {
 
     public static DishDbEntity fromDomainModel(Dish dish) {
         DishDbEntity dbEntity = new DishDbEntity();
-        dbEntity.setIdDish(dish.getId().toString());
+        dbEntity.setIdDish(dish.getId() != null ? dish.getId().toString() : UUID.randomUUID().toString());
         dbEntity.setName(dish.getName());
         dbEntity.setPrice(dish.getPrice());
         dbEntity.setDescription(dish.getDescription());

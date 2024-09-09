@@ -8,6 +8,5 @@ import lombok.Value;
 public class MakeReservationRequest {
     private LocalDate dateStart;
     private LocalDate dateEnd;
-    private double total;
     private List<String> idRooms;
 }

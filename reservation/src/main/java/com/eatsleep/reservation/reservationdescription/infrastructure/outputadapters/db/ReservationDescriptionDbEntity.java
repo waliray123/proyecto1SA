@@ -25,7 +25,6 @@ import lombok.Setter;
 public class ReservationDescriptionDbEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private String id;
 

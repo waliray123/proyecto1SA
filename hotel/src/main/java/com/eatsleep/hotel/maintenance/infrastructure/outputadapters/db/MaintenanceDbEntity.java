@@ -21,11 +21,11 @@ public class MaintenanceDbEntity {
     @Column(name = "date_maintenance", nullable = false)
     private LocalDate dateMaintenance;
 
-    @Column(name = "maintenance_cost", nullable = false)
+    @Column(name = "maintenance", nullable = false)
     private Double maintenanceCost;
 
     @ManyToOne
-    @JoinColumn(name = "id_room", nullable = false)
+    @JoinColumn(name = "room_id_room", nullable = false)
     private RoomDbEntity room;
 
     public Maintenance toDomainModel() {

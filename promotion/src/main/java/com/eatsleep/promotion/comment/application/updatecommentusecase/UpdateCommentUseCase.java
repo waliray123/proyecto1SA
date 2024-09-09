@@ -4,6 +4,7 @@ import com.eatsleep.promotion.common.UseCase;
 import com.eatsleep.promotion.comment.domain.Comment;
 import com.eatsleep.promotion.comment.infrastructure.inputports.UpdateCommentInputPort;
 import com.eatsleep.promotion.comment.infrastructure.outputadapters.db.CommentDbOutputAdapter;
+import com.eatsleep.promotion.comment.infrastructure.outputadapters.restapi.CommentRestApiOutputAdapter;
 import jakarta.transaction.Transactional;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class UpdateCommentUseCase implements UpdateCommentInputPort{
     
     private CommentDbOutputAdapter commentOutputAdapter;
+    private CommentRestApiOutputAdapter commentRestApiOutputAdapter;
 
     @Autowired
-    public UpdateCommentUseCase(CommentDbOutputAdapter commentOutputAdapter) {
+    public UpdateCommentUseCase(CommentDbOutputAdapter commentOutputAdapter, CommentRestApiOutputAdapter commentRestApiOutputAdapter) {
         this.commentOutputAdapter = commentOutputAdapter;
+        this.commentRestApiOutputAdapter = commentRestApiOutputAdapter;
     }
 
     @Override
@@ -27,9 +30,10 @@ public class UpdateCommentUseCase implements UpdateCommentInputPort{
         validateCreateCommentRequest(commentRequest);
         
         // Validar que existe el usuario
-        validateUser();
+        validateClient(commentRequest.getIdUser());
         
         // Validar el producto
+        validateProduct(commentRequest.getIdProduct(), type);
         
         // Validar que el comentario exista
         Comment comment = commentOutputAdapter.getCommentById(idComment).orElseThrow(() -> new IllegalArgumentException("Comentario no encontrado"));
@@ -71,8 +75,33 @@ public class UpdateCommentUseCase implements UpdateCommentInputPort{
         }
     }
     
-    private void validateUser(){
-        
+    private void validateClient(String idClient){
+        if(!commentRestApiOutputAdapter.checkClientExistsOutputPort(idClient)){
+            throw new IllegalArgumentException("El identificador"+ idClient +"no corresponde a un cliente");
+        }
+    }
+    
+    private void validateProduct(String idProduct, String type){
+        if(type.contains("hotel")){
+            if(!commentRestApiOutputAdapter.checkHotelExistsOutputPort(idProduct)){
+                throw new IllegalArgumentException("El identificador"+ idProduct +"no corresponde a un hotel");
+            }
+        }else if(type.contains("room")){
+            if(!commentRestApiOutputAdapter.checkRoomExistsOutputPort(idProduct)){
+                throw new IllegalArgumentException("El identificador"+ idProduct +"no corresponde a un cuarto");
+            }
+        }else if(type.contains("restaurant")){
+            if(!commentRestApiOutputAdapter.checkRestaurantExistsOutputPort(idProduct)){
+                throw new IllegalArgumentException("El identificador"+ idProduct +"no corresponde a un restaurante");
+            }
+        }else if(type.contains("dish")){
+            if(!commentRestApiOutputAdapter.checkDishExistsOutputPort(idProduct)){
+                throw new IllegalArgumentException("El identificador"+ idProduct +"no corresponde a un platillo");
+            }
+        }
+        else{
+            throw new IllegalArgumentException("El tipo del comentario tiene que ser: hotel, room, dish o restaurant. Por favor cambiarlo");
+        }
     }
 
 }

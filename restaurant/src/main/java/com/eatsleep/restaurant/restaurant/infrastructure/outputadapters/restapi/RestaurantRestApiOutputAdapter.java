@@ -1,10 +1,12 @@
 package com.eatsleep.restaurant.restaurant.infrastructure.outputadapters.restapi;
 
+import com.eatsleep.restaurant.common.OutputAdapter;
 import com.eatsleep.restaurant.restaurant.infrastructure.outputports.restapi.ExistHotelOutputPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+@OutputAdapter
 public class RestaurantRestApiOutputAdapter implements ExistHotelOutputPort {
     private final RestTemplate restTemplate;
 

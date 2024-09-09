@@ -7,10 +7,14 @@ import com.eatsleep.hotel.hotel.infrastructure.inputadapters.restapi.response.Re
 import com.eatsleep.hotel.hotel.application.updatehotelusecase.UpdateHotelRequest;
 import com.eatsleep.hotel.hotel.infrastructure.inputadapters.restapi.response.UpdateHotelResponse;
 import com.eatsleep.hotel.hotel.domain.Hotel;
+import com.eatsleep.hotel.hotel.infrastructure.inputadapters.restapi.response.MaintenanceResponse;
 import com.eatsleep.hotel.hotel.infrastructure.inputports.CreateHotelInputPort;
 import com.eatsleep.hotel.hotel.infrastructure.inputports.ExistHotelInputPort;
+import com.eatsleep.hotel.hotel.infrastructure.inputports.GetAllMaintenancesInputPort;
 import com.eatsleep.hotel.hotel.infrastructure.inputports.RetrieveHotelInputPort;
 import com.eatsleep.hotel.hotel.infrastructure.inputports.UpdateHotelInputPort;
+import com.eatsleep.hotel.maintenance.domain.Maintenance;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -35,17 +40,20 @@ public class HotelControllerAdapter {
     private UpdateHotelInputPort updateHotelInputPort;
     private RetrieveHotelInputPort retrieveHotelInputPort;
     private ExistHotelInputPort existHotelInputPort;
+    private GetAllMaintenancesInputPort getAllMaintenancesInputPort;
 
     
     @Autowired
     public HotelControllerAdapter(CreateHotelInputPort createHotelInputPort
             , UpdateHotelInputPort updateHotelInputPort
             , RetrieveHotelInputPort retrieveHotelInputPort
-            , ExistHotelInputPort existHotelInputPort) {
+            , ExistHotelInputPort existHotelInputPort
+            , GetAllMaintenancesInputPort getAllMaintenancesInputPort) {
         this.createHotelInputPort = createHotelInputPort;
         this.updateHotelInputPort = updateHotelInputPort;
         this.retrieveHotelInputPort = retrieveHotelInputPort;
         this.existHotelInputPort = existHotelInputPort;
+        this.getAllMaintenancesInputPort = getAllMaintenancesInputPort;
     }
     
     @PostMapping("/save")
@@ -84,6 +92,26 @@ public class HotelControllerAdapter {
         }
 
         return ResponseEntity.notFound().build();
+    }
+    
+    @GetMapping("/allmaintenances")
+    public ResponseEntity<List<MaintenanceResponse>> getAllMaintenances(
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate) {
+        
+        List<Maintenance> maintenances;
+        
+        if (startDate != null && endDate != null) {
+            maintenances = getAllMaintenancesInputPort.getAllMaintenance(startDate, endDate);
+        } else {
+            maintenances = getAllMaintenancesInputPort.getAllMaintenance(null, null);
+        }
+        
+        List<MaintenanceResponse> response = maintenances.stream()
+                .map(MaintenanceResponse::from)
+                .collect(Collectors.toList());
+        
+        return ResponseEntity.ok(response);
     }
     
     

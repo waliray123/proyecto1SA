@@ -61,7 +61,7 @@ public class PayBillHotelUseCase implements PayBillHotelInputPort{
             // Traer la reservacion y sus descripciones
             // Convertirlas en factura
             // Guardar
-            GetReservationAllDescriptionResponse reservation = this.billRestApiOutputAdapter.getReservationInformation(idUser);
+            GetReservationAllDescriptionResponse reservation = this.billRestApiOutputAdapter.getReservationInformation(billRequest.getReservationId());
             if(reservation == null){
                 throw new IllegalArgumentException("El identificador de la reservacion es incorrecto o no devuelve informacion");
             }
@@ -71,7 +71,7 @@ public class PayBillHotelUseCase implements PayBillHotelInputPort{
             if (!reservation.getDateEnd().equals(bill.getEndDate())) {
                 throw new BillException("La fecha de final de la reserva no coincide con la fecha final de la factura.");
             }
-            if (!reservation.getUser().equals(bill.getUserId())) {
+            if (!reservation.getUser().equals(bill.getUserId().toString())) {
                 throw new BillException("El usuario de la reservacion debe ser el mismo que factura");
             }
             if (!reservation.getIdLocation().equalsIgnoreCase(idHotel)) {
@@ -92,8 +92,10 @@ public class PayBillHotelUseCase implements PayBillHotelInputPort{
             for (BillDescription billDescription : roomsValidated) {                        
                 billDescription.setBill(bill);
                 billDescription = this.billDescriptionDbOutputAdapter.saveBillDescription(billDescription);
+                this.billRestApiOutputAdapter.setCheckInRoom(billDescription.getIdProduct().toString());
+                this.billRestApiOutputAdapter.setStatusConfirmed(billRequest.getReservationId());
             }
-            
+            bill.setDescriptions(roomsValidated);
         }else{
             // Calcular la cantidad de dias que se quedaran
             long daysBeetween = calculateDaysBeetweenTwoDates(
@@ -113,7 +115,9 @@ public class PayBillHotelUseCase implements PayBillHotelInputPort{
             for (BillDescription billDescription : roomsValidated) {                        
                 billDescription.setBill(bill);
                 billDescription = this.billDescriptionDbOutputAdapter.saveBillDescription(billDescription);
+                this.billRestApiOutputAdapter.setCheckInRoom(billDescription.getIdProduct().toString());
             }
+            bill.setDescriptions(roomsValidated);
         }
 
         return bill;
@@ -133,9 +137,9 @@ public class PayBillHotelUseCase implements PayBillHotelInputPort{
         if (idUser == null || idUser.isEmpty()) {
             throw new IllegalArgumentException("El campo id del usuario es obligatorio");
         }
-        if (!request.getStartDate().equals(LocalDate.now())) {
-            throw new IllegalArgumentException("La fecha de inicio debe ser la fecha actual");
-        }
+//        if (!request.getStartDate().equals(LocalDate.now())) {
+//            throw new IllegalArgumentException("La fecha de inicio debe ser la fecha actual");
+//        }
     }
     
     private void validateClient(String idClient){
@@ -158,7 +162,7 @@ public class PayBillHotelUseCase implements PayBillHotelInputPort{
             if (roomBillResponse == null) {
                 throw new BillException("Cuarto con id: " + roomRequest.getIdProduct() + " es inexistente");
             }
-            if (roomBillResponse.isOccupied()) {
+            if (roomBillResponse.isStatus()) {
                 throw new BillException("Cuarto con id: " + roomRequest.getIdProduct() + " ya esta ocupado");
             }
             
@@ -167,9 +171,17 @@ public class PayBillHotelUseCase implements PayBillHotelInputPort{
                 throw new BillException("Cuarto con id: " + roomRequest.getIdProduct() + " no pertenece al mismo hotel de la reservacion");
             }
             
-            // TODO: Revisar si hay una promocion relacionada
+            // Revisar si hay una promocion relacionada
             double promotion = 0;
-            double unitPrice = roomBillResponse.getUnitPrice() + promotion;
+            
+            try {
+                promotion = this.billRestApiOutputAdapter.findPromotionByProductAndDate(roomRequest.getIdProduct(),bill.getStartDate());
+            } catch (Exception e) {
+                promotion = 0;
+                System.out.println("No hay promocion");
+            }
+            
+            double unitPrice = roomBillResponse.getUnitPrice() - roomBillResponse.getUnitPrice() * promotion/100;
             
             // Agregar las reservaciones validas
             bills.add(generateBillDescription(roomRequest.getIdProduct(),unitPrice,Math.toIntExact(daysBeetween),bill));
@@ -185,7 +197,7 @@ public class PayBillHotelUseCase implements PayBillHotelInputPort{
             if (roomBillResponse == null) {
                 throw new BillException("Cuarto con id: " + roomRequest.getIdProduct() + " es inexistente");
             }
-            if (roomBillResponse.isOccupied()) {
+            if (roomBillResponse.isStatus()) {
                 throw new BillException("Cuarto con id: " + roomRequest.getIdProduct() + " ya esta ocupado");
             }
             
@@ -194,9 +206,19 @@ public class PayBillHotelUseCase implements PayBillHotelInputPort{
                 throw new BillException("Cuarto con id: " + roomRequest.getIdProduct() + " no pertenece al mismo hotel de la reservacion");
             }
             
-            // TODO: Revisar si hay una promocion relacionada
-            double promotion = 0;
-            double unitPrice = roomBillResponse.getUnitPrice() + promotion;
+            
+            // Revisar si hay una promocion relacionada
+//            double promotion = 0;
+//            
+//            try {
+//                promotion = this.billRestApiOutputAdapter.findPromotionByProductAndDate(roomRequest.getId(),bill.getStartDate());
+//            } catch (Exception e) {
+//                promotion = 0;
+//                System.out.println("No hay promocion");
+//            }
+//            
+//            double unitPrice = roomBillResponse.getUnitPrice() + roomBillResponse.getUnitPrice() * promotion/100;
+            double unitPrice = roomBillResponse.getUnitPrice();
             
             // Agregar las reservaciones validas
             bills.add(generateBillDescription(roomRequest.getIdProduct(),unitPrice,Math.toIntExact(daysBeetween),bill));
@@ -210,6 +232,7 @@ public class PayBillHotelUseCase implements PayBillHotelInputPort{
                 .unitPrice(unitPrice)
                 .quantity(daysBeetween)
                 .bill(bill)
+                .type("room")
                 .build();
         return billDescription;
     }

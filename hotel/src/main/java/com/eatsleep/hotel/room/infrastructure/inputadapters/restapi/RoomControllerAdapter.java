@@ -52,7 +52,8 @@ public class RoomControllerAdapter {
             , MakeMaintenanceRoomInputPort maintenanceRoomInputPort
             , MakeMaintenanceAllRoomsInputPort maintenanceAllRoomsInputPort 
             , CheckInRoomInputPort checkInRoomInputPort
-            , CheckOutRoomInputPort checkOutRoomInputPort) {
+            , CheckOutRoomInputPort checkOutRoomInputPort
+            , ExistRoomInputPort existRoomInputPort) {
         this.createRoomInputPort = createRoomInputPort;
         this.updateRoomInputPort = updateRoomInputPort;
         this.retrieveRoomInputPort = retrieveRoomInputPort;
@@ -60,6 +61,7 @@ public class RoomControllerAdapter {
         this.maintenanceAllRoomsInputPort = maintenanceAllRoomsInputPort;
         this.checkInRoomInputPort = checkInRoomInputPort;
         this.checkOutRoomInputPort = checkOutRoomInputPort;
+        this.existRoomInputPort = existRoomInputPort;
     }
     
     
@@ -109,7 +111,7 @@ public class RoomControllerAdapter {
     }
     
     @PostMapping("/maintenance/all")
-    public ResponseEntity<List<MaintenanceRoomResponse>> maintenanceRoomAll(@PathVariable String idRoom) {
+    public ResponseEntity<List<MaintenanceRoomResponse>> maintenanceRoomAll() {
         List<Maintenance> maintenances = maintenanceAllRoomsInputPort.makeMaintenanceAllRooms();
         List<MaintenanceRoomResponse> response = maintenances.stream()
                 .map(MaintenanceRoomResponse::new) // Utilize the constructor for mapping

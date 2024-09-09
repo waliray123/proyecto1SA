@@ -7,6 +7,6 @@ public class RoomBillResponse {
     private String id;
     private int number;
     private double unitPrice;
-    private boolean occupied;
+    private boolean status;
     private String idHotel;
 }

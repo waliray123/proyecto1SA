@@ -16,7 +16,7 @@ import lombok.Setter;
 
 
 @Entity
-@Table(name = "room")
+@Table(name = "reservation")
 @Getter
 @Setter
 @NoArgsConstructor

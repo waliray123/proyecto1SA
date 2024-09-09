@@ -47,28 +47,28 @@ public class BillDbEntity {
     // Método para convertir la entidad de base de datos a un modelo de dominio
     public Bill toDomainModel() {
         return Bill.builder()
-                .id(UUID.fromString(this.getId()))
-                .type(this.getType())
-                .idLocation(UUID.fromString(this.getIdLocation()))
-                .startDate(this.getStartDate())
-                .endDate(this.getEndDate())
-                .total(this.getTotal())
-                .userId(UUID.fromString(this.getUserId()))
-                .reservationId(UUID.fromString(this.getReservationId()))
-                .build();
+            .id(UUID.fromString(this.getId()))
+            .type(this.getType())
+            .idLocation(UUID.fromString(this.getIdLocation()))
+            .startDate(this.getStartDate())
+            .endDate(this.getEndDate())
+            .total(this.getTotal())
+            .userId(UUID.fromString(this.getUserId()))
+            .reservationId(this.getReservationId() != null ? UUID.fromString(this.getReservationId()) : null)
+            .build();
     }
 
     // Método para crear una entidad de base de datos a partir de un modelo de dominio
     public static BillDbEntity fromDomainModel(Bill bill) {
         BillDbEntity billDbEntity = new BillDbEntity();
-        billDbEntity.setId(bill.getId().toString());
+        billDbEntity.setId(bill.getId() != null ? bill.getId().toString() : UUID.randomUUID().toString());
         billDbEntity.setType(bill.getType());
         billDbEntity.setIdLocation(bill.getIdLocation().toString());
         billDbEntity.setStartDate(bill.getStartDate());
         billDbEntity.setEndDate(bill.getEndDate());
         billDbEntity.setTotal(bill.getTotal());
         billDbEntity.setUserId(bill.getUserId().toString());
-        billDbEntity.setReservationId(bill.getReservationId().toString());
+        billDbEntity.setReservationId(bill.getReservationId() != null ? bill.getReservationId().toString() : null);
         return billDbEntity;
     }
 }

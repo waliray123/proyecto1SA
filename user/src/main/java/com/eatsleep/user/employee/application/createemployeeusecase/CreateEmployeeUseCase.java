@@ -7,6 +7,7 @@ import com.eatsleep.user.employee.domain.Employee;
 import com.eatsleep.user.employee.infrastructure.inputports.CreateEmployeeInputPort;
 import com.eatsleep.user.employee.infrastructure.outputadapters.db.EmployeeDbOutputAdapter;
 import com.eatsleep.user.employee.infrastructure.outputadapters.restapi.EmployeeRestApiOutportAdapter;
+import com.eatsleep.user.security.Role;
 import jakarta.transaction.Transactional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,7 @@ public class CreateEmployeeUseCase implements CreateEmployeeInputPort{
         //Generar una password
         PasswordGenerator passwordGenerator = new PasswordGenerator();
         String password = passwordGenerator.generatePassword(8);
+        Role rol = employeeRequest.getType().equals("Administrator") ? Role.ADMINISTRATOR : Role.EMPLOYEE;
 
         // Crear el empleado
         Employee employee = Employee.builder()
@@ -65,6 +67,7 @@ public class CreateEmployeeUseCase implements CreateEmployeeInputPort{
                 .type(employeeRequest.getType())
                 .weeklyPayment(employeeRequest.getWeeklyPayment())
                 .idLocation(UUID.fromString(idLocation))
+                .role(rol)
                 .build();
 
         // Persistir el empleado en la base de datos usando el Output Adapter

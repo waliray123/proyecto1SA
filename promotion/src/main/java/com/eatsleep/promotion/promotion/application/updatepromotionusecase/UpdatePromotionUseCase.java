@@ -23,11 +23,6 @@ public class UpdatePromotionUseCase implements UpdatePromotionInputPort{
         this.promotionRestApiOutputAdapter = promotionRestApiOutputAdapter;
     }
 
-    @Autowired
-    public UpdatePromotionUseCase(PromotionDbOutputAdapter promotionOutputAdapter) {
-        this.promotionOutputAdapter = promotionOutputAdapter;
-    }
-
     @Override
     public Optional<Promotion> updatePromotion(String idPromotion, UpdatePromotionRequest promotionRequest) {
         validatePromotionRequest(promotionRequest);
@@ -77,7 +72,7 @@ public class UpdatePromotionUseCase implements UpdatePromotionInputPort{
         if (promotionRequest.getIdProduct() == null || promotionRequest.getIdProduct().isEmpty()) {
             throw new IllegalArgumentException("El producto a aplicar la promocion es obligatoria");
         }
-        if (promotionRequest.getValuePromotion() > 0) {
+        if (promotionRequest.getValuePromotion() < 0) {
             throw new IllegalArgumentException("El valor de la promocion debe ser mayor a cero");
         }
     }

@@ -1,5 +1,6 @@
 package com.eatsleep.promotion.promotion.infrastructure.outputadapters.restapi;
 
+import com.eatsleep.promotion.common.OutputAdapter;
 import com.eatsleep.promotion.promotion.infrastructure.outputports.restapi.CheckExistDishOutputPort;
 import com.eatsleep.promotion.promotion.infrastructure.outputports.restapi.CheckExistHotelOutputPort;
 import com.eatsleep.promotion.promotion.infrastructure.outputports.restapi.CheckExistRestaurantOutputPort;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+@OutputAdapter
 public class PromotionRestApiOutputAdapter implements CheckExistHotelOutputPort, CheckExistRestaurantOutputPort
     ,CheckExistRoomOutputPort,CheckExistDishOutputPort{
     

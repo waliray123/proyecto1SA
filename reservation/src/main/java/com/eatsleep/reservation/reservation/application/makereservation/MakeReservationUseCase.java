@@ -115,10 +115,20 @@ public class MakeReservationUseCase implements MakeReservationInputPort{
                 throw new ReservationException("No se puede reservar el cuarto numero porque ya tiene un reservacion en la fecha: " + reservation.getDateStart());
             } 
             
-            // TODO: Revisar un tipo de promocion y aplicarlo
+            // Revisar si hay una promocion relacionada
+            double promotion = 0;
+            
+            try {
+                promotion = this.reservationRestApiOutputAdapter.findPromotionByProductAndDate(idRoom,reservation.getDateStart());
+            } catch (Exception e) {
+                promotion = 0;
+                System.out.println("No hay promocion");
+            }
+            
+            double unitPrice = roomReservationResponse.getUnitPrice() - roomReservationResponse.getUnitPrice() * promotion/100;
             
             // Agregar las reservaciones validas
-            reservations.add(generateReservationDescription(idRoom,roomReservationResponse.getUnitPrice(),Math.toIntExact(daysBeetween),reservation));
+            reservations.add(generateReservationDescription(idRoom,unitPrice,Math.toIntExact(daysBeetween),reservation));
         }
         return reservations;
     }

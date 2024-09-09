@@ -3,14 +3,16 @@ package com.eatsleep.promotion.promotion.infrastructure.outputadapters.db;
 import com.eatsleep.promotion.common.OutputAdapter;
 import com.eatsleep.promotion.promotion.domain.Promotion;
 import com.eatsleep.promotion.promotion.infrastructure.outputports.db.CreatePromotionOutputPort;
+import com.eatsleep.promotion.promotion.infrastructure.outputports.db.FindPromotionByProductAndDateOutputPort;
 import com.eatsleep.promotion.promotion.infrastructure.outputports.db.RetrievePromotionOutputPort;
 import com.eatsleep.promotion.promotion.infrastructure.outputports.db.UpdatePromotionOutputPort;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @OutputAdapter
-public class PromotionDbOutputAdapter implements CreatePromotionOutputPort,UpdatePromotionOutputPort,RetrievePromotionOutputPort{
+public class PromotionDbOutputAdapter implements CreatePromotionOutputPort,UpdatePromotionOutputPort,RetrievePromotionOutputPort, FindPromotionByProductAndDateOutputPort{
     
     private PromotionDbEntityRepository promotionDbEntityRepository;
 
@@ -64,5 +66,15 @@ public class PromotionDbOutputAdapter implements CreatePromotionOutputPort,Updat
                 .map(promotionDbEntity -> promotionDbEntity.toDomainModel())
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Optional<Promotion> findPromotionByProductAndDate(String idProduct, LocalDate date) {
+        Optional<PromotionDbEntity> promotionDbEntity = promotionDbEntityRepository.findPromotionByProductAndDate(idProduct, date);
+        
+        // Convertir la entidad a un objeto de dominio Promotion si está presente
+        return promotionDbEntity.map(PromotionDbEntity::toDomainModel);
+    }
+    
+    
 
 }

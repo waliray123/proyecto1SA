@@ -71,7 +71,7 @@ public class ClientControllerAdapter {
         return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
     
-    @PutMapping("/updatehotel/{id}")
+    @PutMapping("/updateclient/{id}")
     public ResponseEntity<UpdateClientResponse> updateClientHotel(@PathVariable String id, @RequestBody UpdateClientRequest updatedClientDetails) {
         return updateClientInputPort.updateClient(id, updatedClientDetails)
                 .map(client -> new ResponseEntity<>(new UpdateClientResponse(client), HttpStatus.OK))

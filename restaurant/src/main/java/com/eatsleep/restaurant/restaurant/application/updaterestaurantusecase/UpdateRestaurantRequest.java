@@ -6,5 +6,5 @@ import lombok.Value;
 public class UpdateRestaurantRequest {
     private String name;
     private String location;
-    private Long idHotel;
+    private String idHotel;
 }

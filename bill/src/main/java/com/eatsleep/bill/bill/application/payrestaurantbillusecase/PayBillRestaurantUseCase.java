@@ -48,6 +48,7 @@ public class PayBillRestaurantUseCase implements PayBillRestaurantInputPort{
                 .type("RESTAURANT")
                 .idLocation(UUID.fromString(idRestaurant))
                 .startDate(billRequest.getStartDate())
+                .endDate(billRequest.getStartDate())
                 .userId(UUID.fromString(idUser)) 
                 .build();
 
@@ -63,6 +64,7 @@ public class PayBillRestaurantUseCase implements PayBillRestaurantInputPort{
             billDescription.setBill(bill);
             billDescription = this.billDescriptionDbOutputAdapter.saveBillDescription(billDescription);
         }
+        bill.setDescriptions(dishesValidated);
         
         return bill;
     }
@@ -107,7 +109,15 @@ public class PayBillRestaurantUseCase implements PayBillRestaurantInputPort{
             
             // TODO: Revisar si hay una promocion relacionada
             double promotion = 0;
-            double unitPrice = dishBillResponse.getPrice() + promotion;
+            
+            try {
+                promotion = this.billRestApiOutputAdapter.findPromotionByProductAndDate(dishRequest.getIdProduct(),bill.getStartDate());
+            } catch (Exception e) {
+                promotion = 0;
+                System.out.println("No hay promocion");
+            }
+            
+            double unitPrice = dishBillResponse.getPrice() - dishBillResponse.getPrice() * promotion/100;
             
             // Agregar las platillos validos
             bills.add(generateBillDescription(dishRequest.getIdProduct(),unitPrice,dishRequest.getQuantity(),bill));
@@ -121,6 +131,7 @@ public class PayBillRestaurantUseCase implements PayBillRestaurantInputPort{
                 .unitPrice(unitPrice)
                 .quantity(quantity)
                 .bill(bill)
+                .type("dish")
                 .build();
         return billDescription;
     }

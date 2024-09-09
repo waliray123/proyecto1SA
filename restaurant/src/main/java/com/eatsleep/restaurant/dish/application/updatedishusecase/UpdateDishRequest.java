@@ -8,5 +8,5 @@ public class UpdateDishRequest {
     private String name;
     private double price;
     private String description;
-    private Long idRestaurant;   
+    private String idRestaurant;   
 }

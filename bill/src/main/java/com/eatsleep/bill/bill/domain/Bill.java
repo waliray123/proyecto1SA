@@ -1,7 +1,9 @@
 package com.eatsleep.bill.bill.domain;
 
+import com.eatsleep.bill.billdescription.domain.BillDescription;
 import com.eatsleep.bill.common.DomainEntity;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,5 +22,6 @@ public class Bill {
     private double total;
     private UUID userId;
     private UUID reservationId;
+    private List<BillDescription> descriptions;
 
 }

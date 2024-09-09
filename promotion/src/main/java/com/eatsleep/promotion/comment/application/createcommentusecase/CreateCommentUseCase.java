@@ -99,19 +99,19 @@ public class CreateCommentUseCase implements CreateCommentInputPort{
     
     private void validateProduct(String idProduct, String type){
         if(type.contains("hotel")){
-            if(!commentRestApiOutputAdapter.checkHotelExistsOutputPort(type)){
+            if(!commentRestApiOutputAdapter.checkHotelExistsOutputPort(idProduct)){
                 throw new IllegalArgumentException("El identificador"+ idProduct +"no corresponde a un hotel");
             }
         }else if(type.contains("room")){
-            if(!commentRestApiOutputAdapter.checkRoomExistsOutputPort(type)){
+            if(!commentRestApiOutputAdapter.checkRoomExistsOutputPort(idProduct)){
                 throw new IllegalArgumentException("El identificador"+ idProduct +"no corresponde a un cuarto");
             }
         }else if(type.contains("restaurant")){
-            if(!commentRestApiOutputAdapter.checkRestaurantExistsOutputPort(type)){
+            if(!commentRestApiOutputAdapter.checkRestaurantExistsOutputPort(idProduct)){
                 throw new IllegalArgumentException("El identificador"+ idProduct +"no corresponde a un restaurante");
             }
         }else if(type.contains("dish")){
-            if(!commentRestApiOutputAdapter.checkDishExistsOutputPort(type)){
+            if(!commentRestApiOutputAdapter.checkDishExistsOutputPort(idProduct)){
                 throw new IllegalArgumentException("El identificador"+ idProduct +"no corresponde a un platillo");
             }
         }

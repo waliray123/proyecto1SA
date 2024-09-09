@@ -8,6 +8,7 @@ import com.eatsleep.promotion.comment.infrastructure.outputports.restapi.CheckEx
 import com.eatsleep.promotion.comment.infrastructure.outputports.restapi.GetInformationDishOutputPort;
 import com.eatsleep.promotion.comment.infrastructure.outputports.restapi.GetInformationRoomOutputPort;
 import com.eatsleep.promotion.comment.infrastructure.outputports.restapi.GetToSpendingClientsOutputPort;
+import com.eatsleep.promotion.common.OutputAdapter;
 import com.eatsleep.promotion.promotion.application.getrelatedpromotiontocreateusecase.DishPromotionResponse;
 import com.eatsleep.promotion.promotion.application.getrelatedpromotiontocreateusecase.RoomPromotionResponse;
 import com.eatsleep.promotion.promotion.application.getrelatedpromotiontocreateusecase.TopSpendingClientResponse;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+@OutputAdapter
 public class CommentRestApiOutputAdapter implements CheckExistHotelOutputPort, CheckExistRestaurantOutputPort
     ,CheckExistRoomOutputPort,CheckExistDishOutputPort,CheckExistClientOutputPort
     ,GetInformationRoomOutputPort

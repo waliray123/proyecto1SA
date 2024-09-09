@@ -36,8 +36,27 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.GET, "/v1/datafile/verifySystemData").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/v1/auth/login", "/v1/auth/logout", "/v1/employees/savehotel/{idHotel}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v1/datafile/verifySystemData"
+                        ,"/v1/employees/getemployee/{id}"
+                                ,"/v1/employees/all"
+                                ,"/v1/employees/all/{idLocation}"
+                                ,"/v1/employees/rangepayments"
+                                ,"/v1/clients/getclient/{id}"
+                                ,"/v1/clients/all"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/v1/auth/login", "/v1/auth/logout", "/v1/employees/savehotel/{idHotel}"
+                                ,"/v1/employees/saverestaurant/{idRestaurant}"
+                                ,"/v1/employees/pay"
+                                ,"/v1/clients/save"
+                            ).permitAll()
+                        .requestMatchers(HttpMethod.PUT,
+                                "/v1/employees/updatehotel/{idHotel}/{id}"
+                                ,"/v1/employees/updaterestaurant/{idRestaurant}/{id}" 
+                                ,"/v1/clients/updateclient/{id}"
+                            ).permitAll()
+                        .requestMatchers(HttpMethod.HEAD,"/v1/clients/exists/{idClient}"
+                            
+                            ).permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

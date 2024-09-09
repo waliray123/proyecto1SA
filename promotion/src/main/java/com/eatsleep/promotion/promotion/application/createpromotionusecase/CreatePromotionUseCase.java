@@ -64,7 +64,7 @@ public class CreatePromotionUseCase implements CreatePromotionInputPort{
         if (promotionRequest.getIdProduct() == null || promotionRequest.getIdProduct().isEmpty()) {
             throw new IllegalArgumentException("El producto a aplicar la promocion es obligatoria");
         }
-        if (promotionRequest.getValuePromotion() > 0) {
+        if (promotionRequest.getValuePromotion() < 0) {
             throw new IllegalArgumentException("El valor de la promocion debe ser mayor a cero");
         }
     }
